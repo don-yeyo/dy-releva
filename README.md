@@ -167,10 +167,10 @@ El proyecto está preparado para desplegarse directamente en **Netlify** utiliza
 1. Conecta tu repositorio de GitHub / GitLab a Netlify.
 2. Netlify detectará la configuración de `netlify.toml`:
    - **Publish directory:** `client/dist`
-   - **Build command:** `npm run build --prefix client && npm run build:functions --prefix server`
-   - **Functions directory:** `server/dist-functions`
+   - **Build command:** `npm run build --prefix client`
+   - **Functions directory:** `netlify/functions`
 3. En el panel de Netlify (*Site settings > Environment variables*), agrega las variables del servidor (`ANTHROPIC_API_KEY`, `GOOGLE_SCRIPT_URL`, `ADMIN_PASSWORD`, etc.).
-4. Las llamadas a `/api/*` se resolverán automáticamente a través de la Serverless Function de Netlify (`server/src/lambda.js`).
+4. Las llamadas a `/api/*` se resolverán automáticamente a través de la Serverless Function de Netlify (`netlify/functions/api.js`).
 
 ---
 
