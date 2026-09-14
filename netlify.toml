@@ -1,0 +1,20 @@
+[build]
+  base = "."
+  publish = "client/dist"
+  command = "npm run build --prefix client && npm run build:functions --prefix server"
+  functions = "server/dist-functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Redirigir llamadas API hacia Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Redirigir el resto al index.html para soportar el router SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

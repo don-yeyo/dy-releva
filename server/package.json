@@ -1,0 +1,19 @@
+{
+  "name": "donyeyo-precios-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "build": "echo \"Server build ready\"",
+    "build:functions": "mkdir -p dist-functions && cp src/lambda.js dist-functions/api.js || copy src\\lambda.js dist-functions\\api.js || node -e \"const fs=require('fs');fs.mkdirSync('dist-functions',{recursive:true});fs.copyFileSync('src/lambda.js','dist-functions/api.js')\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {}
+}
