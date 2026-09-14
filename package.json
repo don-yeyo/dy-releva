@@ -2,6 +2,7 @@
   "name": "donyeyo-precios-app",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Sistema de relevamiento y comparativa de precios para Don Yeyo S.A. (Monorepo React + Vite + Node/Express)",
   "workspaces": [
     "client",
@@ -11,9 +12,15 @@
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
-    "build": "npm run build --prefix client && npm run build --prefix server",
+    "build": "npm run build --prefix client",
     "install:all": "npm install && npm install --prefix server && npm install --prefix client",
     "start": "npm run start --prefix server"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

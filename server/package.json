@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "build": "echo \"Server build ready\"",
-    "build:functions": "mkdir -p dist-functions && cp src/lambda.js dist-functions/api.js || copy src\\lambda.js dist-functions\\api.js || node -e \"const fs=require('fs');fs.mkdirSync('dist-functions',{recursive:true});fs.copyFileSync('src/lambda.js','dist-functions/api.js')\""
+    "build": "echo \"Server ready\""
   },
   "dependencies": {
     "cors": "^2.8.5",
