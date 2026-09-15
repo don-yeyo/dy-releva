@@ -79,7 +79,14 @@ html, body {
 .header-logo-area {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+
+.header-logo-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
 }
 
 .header-brand {
@@ -597,7 +604,19 @@ input[type="number"] {
 
 .login-brand {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-logo-img {
+  max-width: 220px;
+  height: auto;
+  max-height: 85px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+  margin-bottom: 6px;
 }
 
 .login-brand h1 {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginUser } from '../services/api';
 import { APP_VERSION } from '../config/version';
+import logoDonYeyo from '../assets/logo-don-yeyo-png-sin-fondo.png';
 import { Lock, User } from 'lucide-react';
 
 export default function Login({ onLoginSuccess }) {
@@ -39,7 +40,11 @@ export default function Login({ onLoginSuccess }) {
   return (
     <div className="login-screen">
       <div className="login-brand">
-        <h1>DON <span>YEYO</span></h1>
+        <img
+          src={logoDonYeyo}
+          alt="Don Yeyo"
+          className="login-logo-img"
+        />
         <p>Relevamiento de Precios</p>
       </div>
 

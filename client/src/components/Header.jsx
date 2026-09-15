@@ -1,5 +1,6 @@
 import React from 'react';
 import { APP_VERSION } from '../config/version';
+import logoDonYeyo from '../assets/logo-don-yeyo-png-sin-fondo.png';
 import { LogOut } from 'lucide-react';
 
 export default function Header({ currentUser, onLogout }) {
@@ -13,6 +14,7 @@ export default function Header({ currentUser, onLogout }) {
     <header className="app-header">
       <div className="header-top">
         <div className="header-logo-area">
+          <img src={logoDonYeyo} alt="Don Yeyo" className="header-logo-img" />
           <div className="header-brand">
             DON <span>YEYO</span>
             <span className="header-version">v{APP_VERSION}</span>
