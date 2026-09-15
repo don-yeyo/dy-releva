@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { DY_PRODUCTS } from '../data/dyProducts';
-import { parseVoice, parseImage, syncPriceRecord } from '../services/api';
+import { parseVoice, parseImage } from '../services/api';
 import { Mic, Camera, Zap, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function CargarPrecio({
@@ -40,6 +40,7 @@ export default function CargarPrecio({
   // Autocompletado de locales
   const [acMatches, setAcMatches] = useState([]);
   const [showAc, setShowAc] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   // Manejador Autocompletado
@@ -173,6 +174,8 @@ export default function CargarPrecio({
 
   // Registro de Precio
   const registrar = () => {
+    if (isSubmitting) return;
+
     const locNombre = rafagaActiva ? rafagaPDV.nombre : nombreLocal.trim();
     const locCiudad = rafagaActiva ? rafagaPDV.ciudad : ciudad.trim();
     const locDir = rafagaActiva ? rafagaPDV.direccion : direccion.trim();
@@ -184,6 +187,7 @@ export default function CargarPrecio({
     if (!marca.trim()) return showToast('Ingresa la marca');
     if (isNaN(numPrecio) || numPrecio <= 0) return showToast('Ingresa un precio válido');
 
+    setIsSubmitting(true);
     onSaveLocal({ nombre: locNombre, ciudad: locCiudad, direccion: locDir });
 
     const now = new Date();
@@ -208,47 +212,54 @@ export default function CargarPrecio({
       lng: ''
     };
 
-    // Obtener Geolocalización en segundo plano si está disponible
+    const finalizarRegistro = (recordFinal) => {
+      onAddRecord(recordFinal);
+
+      // Limpiar formulario producto manteniendo local si está en ráfaga
+      setProducto('');
+      setGramaje('');
+      setMarca('');
+      setPrecio('');
+      setComentario('');
+      setDyRef('');
+      setDyPrecio('');
+      setOcrPreview(null);
+      setVoiceStatus('');
+      setIsSubmitting(false);
+      showToast('Precio registrado correctamente');
+    };
+
+    // Obtener Geolocalización con timeout rápido si está disponible
     if (navigator.geolocation) {
+      let geoProcessed = false;
+      const geoTimeout = setTimeout(() => {
+        if (!geoProcessed) {
+          geoProcessed = true;
+          finalizarRegistro(newRecord);
+        }
+      }, 2000);
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          newRecord.lat = pos.coords.latitude.toFixed(6);
-          newRecord.lng = pos.coords.longitude.toFixed(6);
-          onAddRecord(newRecord);
-          sincronizar(newRecord);
+          if (!geoProcessed) {
+            geoProcessed = true;
+            clearTimeout(geoTimeout);
+            newRecord.lat = pos.coords.latitude.toFixed(6);
+            newRecord.lng = pos.coords.longitude.toFixed(6);
+            finalizarRegistro(newRecord);
+          }
         },
         () => {
-          onAddRecord(newRecord);
-          sincronizar(newRecord);
+          if (!geoProcessed) {
+            geoProcessed = true;
+            clearTimeout(geoTimeout);
+            finalizarRegistro(newRecord);
+          }
         },
-        { timeout: 4000 }
+        { timeout: 2000 }
       );
     } else {
-      onAddRecord(newRecord);
-      sincronizar(newRecord);
-    }
-
-    // Limpiar formulario producto manteniendo local si está en ráfaga
-    setProducto('');
-    setGramaje('');
-    setMarca('');
-    setPrecio('');
-    setComentario('');
-    setDyRef('');
-    setDyPrecio('');
-    setOcrPreview(null);
-    setVoiceStatus('');
-    showToast('Precio registrado correctamente');
-  };
-
-  const sincronizar = async (record) => {
-    try {
-      const res = await syncPriceRecord(record);
-      if (res && res.ok) {
-        // Marcado como sincronizado en la lista del componente padre
-      }
-    } catch (e) {
-      console.log('Guardado offline');
+      finalizarRegistro(newRecord);
     }
   };
 
@@ -478,8 +489,14 @@ export default function CargarPrecio({
         </div>
       </div>
 
-      <button type="button" className="btn-primary" onClick={registrar}>
-        + Registrar Precio
+      <button
+        type="button"
+        className="btn-primary"
+        onClick={registrar}
+        disabled={isSubmitting}
+        style={isSubmitting ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
+      >
+        {isSubmitting ? 'Registrando...' : '+ Registrar Precio'}
       </button>
       <div style={{ height: '30px' }}></div>
     </div>

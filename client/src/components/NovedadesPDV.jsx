@@ -13,6 +13,7 @@ export default function NovedadesPDV({
   const [tipo, setTipo] = useState('');
   const [comentario, setComentario] = useState('');
   const [foto, setFoto] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFotoUpload = (e) => {
@@ -27,10 +28,12 @@ export default function NovedadesPDV({
   };
 
   const guardar = async () => {
+    if (isSubmitting) return;
     if (!pdv.trim()) return showToast('Ingresa el nombre del PDV');
     if (!tipo) return showToast('Selecciona el tipo de novedad');
     if (!comentario.trim()) return showToast('Escribe un comentario');
 
+    setIsSubmitting(true);
     const now = new Date();
     const newNov = {
       id: Date.now(),
@@ -50,6 +53,8 @@ export default function NovedadesPDV({
       await syncNovedadRecord(newNov);
     } catch (e) {
       console.log('Novedad guardada offline');
+    } finally {
+      setIsSubmitting(false);
     }
 
     // Limpiar formulario
@@ -128,8 +133,14 @@ export default function NovedadesPDV({
           )}
         </div>
 
-        <button type="button" className="btn-primary" onClick={guardar}>
-          + Guardar Novedad
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={guardar}
+          disabled={isSubmitting}
+          style={isSubmitting ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
+        >
+          {isSubmitting ? 'Guardando...' : '+ Guardar Novedad'}
         </button>
       </div>
 

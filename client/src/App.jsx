@@ -62,102 +62,83 @@ export default function App() {
     }
   };
 
-  // Agregar registro de precio
-  const handleAddRecord = (record) => {
+  // Agregar registro de precio y sincronizar inmediatamente si hay conexión
+  const handleAddRecord = async (record) => {
     const updated = [record, ...registros];
     setRegistros(updated);
     if (currentUser) {
       const regKey = getUserStorageKey('registros', currentUser.usuario);
       saveData(regKey, updated);
     }
-  };
 
-  // Eliminar registro
-  const handleDeleteRecord = (id) => {
-    if (!window.confirm('¿Eliminar este registro de precio?')) return;
-    const updated = registros.filter((r) => r.id !== id);
-    setRegistros(updated);
-    if (currentUser) {
-      const regKey = getUserStorageKey('registros', currentUser.usuario);
-      saveData(regKey, updated);
+    // Intentar sincronizar inmediatamente con el backend
+    if (navigator.onLine) {
+      try {
+        const res = await syncPriceRecord(record);
+        if (res && res.ok) {
+          setRegistros((prevRegistros) => {
+            const synced = prevRegistros.map((r) =>
+              r.id === record.id ? { ...r, pendiente: false } : r
+            );
+            if (currentUser) {
+              const regKey = getUserStorageKey('registros', currentUser.usuario);
+              saveData(regKey, synced);
+            }
+            return synced;
+          });
+        }
+      } catch (e) {
+        console.log('[Sync] Guardado offline / pendiente para sincronización automática');
+      }
     }
-    showToast('Registro eliminado');
   };
 
-  // Agregar novedad
-  const handleAddNovedad = (novedad) => {
-    const updated = [novedad, ...novedades];
-    setNovedades(updated);
-    if (currentUser) {
-      const novKey = getUserStorageKey('novedades', currentUser.usuario);
-      saveData(novKey, updated);
-    }
-  };
+  // Referencia para evitar sincronizaciones simultáneas
+  const isSyncingRef = React.useRef(false);
 
-  // Eliminar novedad
-  const handleDeleteNovedad = (id) => {
-    if (!window.confirm('¿Eliminar esta novedad?')) return;
-    const updated = novedades.filter((n) => n.id !== id);
-    setNovedades(updated);
-    if (currentUser) {
-      const novKey = getUserStorageKey('novedades', currentUser.usuario);
-      saveData(novKey, updated);
-    }
-    showToast('Novedad eliminada');
-  };
-
-  // Gestión de usuarios locales (Admin)
-  const handleAddUsuario = (userObj) => {
-    const updated = [...usuarios, userObj];
-    setUsuarios(updated);
-    saveData('dy_usuarios_admin', updated);
-  };
-
-  const handleToggleActivo = (index) => {
-    const updated = [...usuarios];
-    updated[index].activo = updated[index].activo === 'SI' ? 'NO' : 'SI';
-    setUsuarios(updated);
-    saveData('dy_usuarios_admin', updated);
-  };
-
-  const handleDeleteUsuario = (index) => {
-    if (!window.confirm('¿Borrar este usuario?')) return;
-    const updated = usuarios.filter((_, idx) => idx !== index);
-    setUsuarios(updated);
-    saveData('dy_usuarios_admin', updated);
-    showToast('Usuario eliminado');
-  };
-
-  // Sincronización automática de pendientes al reconectar a internet
+  // Sincronización automática de pendientes al reconectar a internet o periódicamente
   useEffect(() => {
     const sincronizarPendientes = async () => {
-      if (!navigator.onLine || !currentUser) return;
-      const pendientes = registros.filter((r) => r.pendiente);
-      if (!pendientes.length) return;
+      if (!navigator.onLine || !currentUser || isSyncingRef.current) return;
 
-      let sincronizados = 0;
-      const registrosActualizados = [...registros];
+      isSyncingRef.current = true;
+      try {
+        const regKey = getUserStorageKey('registros', currentUser.usuario);
+        const currentSaved = loadData(regKey, []);
+        const pendientes = currentSaved.filter((r) => r.pendiente);
 
-      for (const item of pendientes) {
-        try {
-          const res = await syncPriceRecord(item);
-          if (res && res.ok) {
-            const idx = registrosActualizados.findIndex((x) => x.id === item.id);
-            if (idx > -1) {
-              registrosActualizados[idx].pendiente = false;
+        if (!pendientes.length) {
+          isSyncingRef.current = false;
+          return;
+        }
+
+        let sincronizados = 0;
+        const syncedIds = new Set();
+
+        for (const item of pendientes) {
+          try {
+            const res = await syncPriceRecord(item);
+            if (res && res.ok) {
+              syncedIds.add(item.id);
               sincronizados++;
             }
+          } catch (e) {
+            break;
           }
-        } catch (e) {
-          break;
         }
-      }
 
-      if (sincronizados > 0) {
-        setRegistros(registrosActualizados);
-        const regKey = getUserStorageKey('registros', currentUser.usuario);
-        saveData(regKey, registrosActualizados);
-        showToast(`${sincronizados} registro(s) sincronizado(s) con Google Sheets`);
+        if (syncedIds.size > 0) {
+          setRegistros((prev) => {
+            const actualizados = prev.map((r) =>
+              syncedIds.has(r.id) ? { ...r, pendiente: false } : r
+            );
+            saveData(regKey, actualizados);
+            return actualizados;
+          });
+          showToast(`${sincronizados} registro(s) sincronizado(s) con Google Sheets`);
+        }
+      } finally {
+        isSyncingRef.current = false;
       }
     };
 
@@ -168,7 +149,7 @@ export default function App() {
       window.removeEventListener('online', sincronizarPendientes);
       clearInterval(interval);
     };
-  }, [registros, currentUser]);
+  }, [currentUser]);
 
   return (
     <div className="app-container">
