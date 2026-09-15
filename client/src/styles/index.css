@@ -96,6 +96,17 @@ html, body {
   color: var(--dy-red);
 }
 
+.header-brand .header-version {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.14);
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+  margin-left: 2px;
+}
+
 .header-meta {
   text-align: right;
 }
@@ -646,4 +657,13 @@ input[type="number"] {
   text-align: center;
   margin-top: 10px;
   min-height: 18px;
+}
+
+.login-version {
+  margin-top: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.5px;
+  text-align: center;
 }

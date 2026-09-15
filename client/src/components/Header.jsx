@@ -1,4 +1,5 @@
 import React from 'react';
+import { APP_VERSION } from '../config/version';
 import { LogOut } from 'lucide-react';
 
 export default function Header({ currentUser, onLogout }) {
@@ -14,6 +15,7 @@ export default function Header({ currentUser, onLogout }) {
         <div className="header-logo-area">
           <div className="header-brand">
             DON <span>YEYO</span>
+            <span className="header-version">v{APP_VERSION}</span>
           </div>
         </div>
         <div className="header-meta">

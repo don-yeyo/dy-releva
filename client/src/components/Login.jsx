@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { loginUser } from '../services/api';
+import { APP_VERSION } from '../config/version';
 import { Lock, User } from 'lucide-react';
 
 export default function Login({ onLoginSuccess }) {
@@ -77,6 +78,8 @@ export default function Login({ onLoginSuccess }) {
           {error && <div className="login-error">{error}</div>}
         </form>
       </div>
+
+      <div className="login-version">v{APP_VERSION}</div>
     </div>
   );
 }
