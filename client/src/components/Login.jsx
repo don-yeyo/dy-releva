@@ -55,7 +55,7 @@ export default function Login({ onLoginSuccess }) {
             <input
               id="login-user"
               type="text"
-              placeholder="Tu usuario (ej: admin, jgallo)"
+              placeholder="Tu usuario"
               value={usuario}
               onChange={(e) => setUsuario(e.target.value)}
               autoComplete="username"

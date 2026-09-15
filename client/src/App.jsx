@@ -93,6 +93,62 @@ export default function App() {
     }
   };
 
+  // Eliminar registro
+  const handleDeleteRecord = (id) => {
+    if (!window.confirm('¿Eliminar este registro de precio?')) return;
+    const updated = registros.filter((r) => r.id !== id);
+    setRegistros(updated);
+    if (currentUser) {
+      const regKey = getUserStorageKey('registros', currentUser.usuario);
+      saveData(regKey, updated);
+    }
+    showToast('Registro eliminado');
+  };
+
+  // Agregar novedad
+  const handleAddNovedad = (novedad) => {
+    const updated = [novedad, ...novedades];
+    setNovedades(updated);
+    if (currentUser) {
+      const novKey = getUserStorageKey('novedades', currentUser.usuario);
+      saveData(novKey, updated);
+    }
+  };
+
+  // Eliminar novedad
+  const handleDeleteNovedad = (id) => {
+    if (!window.confirm('¿Eliminar esta novedad?')) return;
+    const updated = novedades.filter((n) => n.id !== id);
+    setNovedades(updated);
+    if (currentUser) {
+      const novKey = getUserStorageKey('novedades', currentUser.usuario);
+      saveData(novKey, updated);
+    }
+    showToast('Novedad eliminada');
+  };
+
+  // Gestión de usuarios locales (Admin)
+  const handleAddUsuario = (userObj) => {
+    const updated = [...usuarios, userObj];
+    setUsuarios(updated);
+    saveData('dy_usuarios_admin', updated);
+  };
+
+  const handleToggleActivo = (index) => {
+    const updated = [...usuarios];
+    updated[index].activo = updated[index].activo === 'SI' ? 'NO' : 'SI';
+    setUsuarios(updated);
+    saveData('dy_usuarios_admin', updated);
+  };
+
+  const handleDeleteUsuario = (index) => {
+    if (!window.confirm('¿Borrar este usuario?')) return;
+    const updated = usuarios.filter((_, idx) => idx !== index);
+    setUsuarios(updated);
+    saveData('dy_usuarios_admin', updated);
+    showToast('Usuario eliminado');
+  };
+
   // Referencia para evitar sincronizaciones simultáneas
   const isSyncingRef = React.useRef(false);
 

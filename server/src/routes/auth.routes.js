@@ -26,9 +26,9 @@ router.post('/login', async (req, res) => {
     }
 
     // 2. Verificación de Usuario Operador local por defecto
-    const defaultOpUser = (process.env.DEFAULT_OPERATOR_USER || 'jgallo').toLowerCase();
-    const defaultOpPass = process.env.DEFAULT_OPERATOR_PASS || 'gallo';
-    const defaultOpName = process.env.DEFAULT_OPERATOR_NAME || 'J. Gallo';
+    const defaultOpUser = (process.env.DEFAULT_OPERATOR_USER || 'un_user').toLowerCase();
+    const defaultOpPass = process.env.DEFAULT_OPERATOR_PASS || 'user';
+    const defaultOpName = process.env.DEFAULT_OPERATOR_NAME || 'Default User';
 
     if (cleanUser === defaultOpUser && cleanPass === defaultOpPass) {
       return res.json({

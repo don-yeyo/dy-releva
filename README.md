@@ -28,7 +28,6 @@ El proyecto está estructurado como un **Monorepo** modular compuesto por:
 
 1. **Autenticación y Seguridad:**
    - Login seguro mediante petición `POST` al backend.
-   - Soporte para Administrador (`admin`), Operador por defecto (`jgallo`) y verificación contra Google Sheets.
    - Claves de API (Anthropic / Claude) y credenciales protegidas en el backend sin exposición en el navegador.
 
 2. **Carga Inteligente de Precios:**
@@ -80,12 +79,6 @@ GOOGLE_SCRIPT_URL=https://script.google.com/macros/s/.../exec
 # Credenciales de Administrador por defecto
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=dyAdmin2024
-
-# Usuario Operador local por defecto
-DEFAULT_OPERATOR_USER=jgallo
-DEFAULT_OPERATOR_PASS=gallo
-DEFAULT_OPERATOR_NAME=J. Gallo
-```
 
 ### 2. Variables del Cliente (`client/.env`)
 
@@ -171,17 +164,6 @@ El proyecto está preparado para desplegarse directamente en **Netlify** utiliza
    - **Functions directory:** `netlify/functions`
 3. En el panel de Netlify (*Site settings > Environment variables*), agrega las variables del servidor (`ANTHROPIC_API_KEY`, `GOOGLE_SCRIPT_URL`, `ADMIN_PASSWORD`, etc.).
 4. Las llamadas a `/api/*` se resolverán automáticamente a través de la Serverless Function de Netlify (`netlify/functions/api.js`).
-
----
-
-## 👥 Credenciales de Acceso por Defecto
-
-- **Administrador:**
-  - **Usuario:** `admin`
-  - **Contraseña:** `dyAdmin2024` *(Configurable en `server/.env`)*
-- **Operador de Prueba:**
-  - **Usuario:** `jgallo`
-  - **Contraseña:** `gallo` *(Configurable en `server/.env`)*
 
 ---
 
