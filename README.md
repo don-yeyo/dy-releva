@@ -35,13 +35,14 @@ El proyecto está estructurado como un **Monorepo** modular compuesto por:
    - **🎙️ Entrada por Voz con IA:** Captura audio por micrófono y utiliza IA (Claude) para estructurar automáticamente local, producto, marca y precio.
    - **📷 Lectura de Etiquetas (Foto OCR):** Captura o sube una foto de la etiqueta de góndola y extrae los datos mediante visión de IA.
    - **📍 Geolocalización Automática:** Guarda coordenadas GPS (`lat`, `lng`) en cada registro si el dispositivo lo autoriza.
-   - **📦 Catálogo Don Yeyo:** Vinculación opcional con productos propios de Don Yeyo y DeViano para análisis comparativo en góndola.
+   - **📦 Catálogo Don Yeyo y Comparativa:** Vinculación opcional con productos propios de Don Yeyo y DeViano (`Ref DY`) y registro de **Precio Propio (`Precio Pro`)** para análisis comparativo en góndola.
+   - **📊 Sincronización con Google Sheets:** Mapeo automático y normalizado de todas las columnas (incluyendo `Precio Pro` / `dyPrecio`, `Ref DY`, fecha, hora, ubicación, etc.) hacia la hoja de cálculo.
 
 3. **Historial y Modo Offline-First:**
-   - Almacenamiento local persistente por usuario.
+   - Almacenamiento local persistente por usuario con visualización de producto propio y Precio Pro.
    - Indicador visual de estado de sincronización (`🟢 Sincronizado` / `🔴 Pendiente`).
    - Sincronización automática en segundo plano al recuperar la conexión a internet.
-   - Exportación de relevamientos a archivo **CSV** compatible con Excel.
+   - Exportación de relevamientos a archivo **CSV** compatible con Excel (incluyendo columna `Precio Pro`).
 
 4. **Dashboard de Métricas en Tiempo Real:**
    - Conteo diario de registros totales, PDVs visitados y marcas relevadas.

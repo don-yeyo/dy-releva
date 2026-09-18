@@ -9,9 +9,12 @@ export default function Historial({ registros, onDeleteRecord, showToast }) {
     }
 
     const hoy = new Date().toLocaleDateString('es-AR').replace(/\//g, '-');
-    let csv = 'Fecha,Hora,Usuario,Local,Ciudad,Direccion,Categoria,Producto,Gramaje,Marca,Precio,Comentario,Ref DY,Precio DY,Lat,Lng\n';
+    let csv = 'Fecha,Hora,Usuario,Local,Ciudad,Direccion,Categoria,Producto,Gramaje,Marca,Precio,Comentario,Ref DY,Precio Pro,Lat,Lng\n';
 
     registros.forEach((r) => {
+      const precioPropioVal = r.precioPro !== undefined && r.precioPro !== '' ? r.precioPro : (r.dyPrecio !== undefined ? r.dyPrecio : '');
+      const refDyVal = r.dyRef || r.refDy || r.prodPropio || '';
+
       csv += [
         r.fecha,
         r.hora,
@@ -25,8 +28,8 @@ export default function Historial({ registros, onDeleteRecord, showToast }) {
         `"${r.marca || ''}"`,
         r.precio,
         `"${r.comentario || ''}"`,
-        `"${r.dyRef || ''}"`,
-        r.dyPrecio || '',
+        `"${refDyVal}"`,
+        precioPropioVal,
         r.lat || '',
         r.lng || ''
       ].join(',') + '\n';
@@ -67,8 +70,13 @@ export default function Historial({ registros, onDeleteRecord, showToast }) {
                   <div className="entry-prod">
                     {r.marca} — {r.prod} {r.gramaje ? `(${r.gramaje})` : ''}
                   </div>
+                  {(r.dyRef || r.refDy || (r.precioPro > 0 || r.dyPrecio > 0)) && (
+                    <div style={{ fontSize: '11px', color: '#1a2b6b', background: '#eef2ff', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', margin: '2px 0' }}>
+                      Ref DY: {r.dyRef || r.refDy || 'Propio'} {((r.precioPro || r.dyPrecio) > 0) ? `(Precio Pro: $${Number(r.precioPro || r.dyPrecio).toLocaleString('es-AR', { minimumFractionDigits: 2 })})` : ''}
+                    </div>
+                  )}
                   {r.comentario && (
-                    <div style={{ fontSize: '11px', color: '#856404', background: '#fff3cd', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', margin: '3px 0' }}>
+                    <div style={{ fontSize: '11px', color: '#856404', background: '#fff3cd', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', margin: '2px 0' }}>
                       {r.comentario}
                     </div>
                   )}

@@ -191,6 +191,9 @@ export default function CargarPrecio({
     onSaveLocal({ nombre: locNombre, ciudad: locCiudad, direccion: locDir });
 
     const now = new Date();
+    const numDyPrecio = parseFloat(dyPrecio) || 0;
+    const refDyLimipio = dyRef.trim();
+
     const newRecord = {
       id: Date.now(),
       fecha: now.toLocaleDateString('es-AR'),
@@ -204,8 +207,14 @@ export default function CargarPrecio({
       gramaje: gramaje.trim(),
       marca: marca.trim(),
       precio: numPrecio,
-      dyRef: dyRef.trim(),
-      dyPrecio: parseFloat(dyPrecio) || 0,
+      dyRef: refDyLimipio,
+      refDy: refDyLimipio,
+      prodPropio: refDyLimipio,
+      productoPropio: refDyLimipio,
+      dyPrecio: numDyPrecio,
+      precioPro: numDyPrecio,
+      precioPropio: numDyPrecio,
+      precio_pro: numDyPrecio,
       comentario: comentario.trim(),
       pendiente: true,
       lat: '',
@@ -473,7 +482,7 @@ export default function CargarPrecio({
         </div>
 
         <div className="field" style={{ marginTop: '12px' }}>
-          <label>Precio DY en Góndola <span>(Opcional)</span></label>
+          <label>Precio Propio en Góndola (Precio Pro) <span>(Opcional)</span></label>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
             <div className="currency">$</div>
             <input
