@@ -41,6 +41,7 @@ export default function CargarPrecio({
   const [acMatches, setAcMatches] = useState([]);
   const [showAc, setShowAc] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const fileInputRef = useRef(null);
 
   // Manejador Autocompletado
@@ -174,7 +175,7 @@ export default function CargarPrecio({
 
   // Registro de Precio
   const registrar = () => {
-    if (isSubmitting) return;
+    if (isSubmittingRef.current) return;
 
     const locNombre = rafagaActiva ? rafagaPDV.nombre : nombreLocal.trim();
     const locCiudad = rafagaActiva ? rafagaPDV.ciudad : ciudad.trim();
@@ -187,6 +188,7 @@ export default function CargarPrecio({
     if (!marca.trim()) return showToast('Ingresa la marca');
     if (isNaN(numPrecio) || numPrecio <= 0) return showToast('Ingresa un precio válido');
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     onSaveLocal({ nombre: locNombre, ciudad: locCiudad, direccion: locDir });
 
@@ -255,7 +257,10 @@ export default function CargarPrecio({
       setDyPrecio('');
       setOcrPreview(null);
       setVoiceStatus('');
-      setIsSubmitting(false);
+      setTimeout(() => {
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
+      }, 1000);
       showToast('Precio registrado correctamente');
     };
 
@@ -267,7 +272,7 @@ export default function CargarPrecio({
           geoProcessed = true;
           finalizarRegistro(newRecord);
         }
-      }, 2000);
+      }, 1500);
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -286,7 +291,7 @@ export default function CargarPrecio({
             finalizarRegistro(newRecord);
           }
         },
-        { timeout: 2000 }
+        { timeout: 1500 }
       );
     } else {
       finalizarRegistro(newRecord);

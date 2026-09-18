@@ -62,6 +62,10 @@ export default function App() {
     }
   };
 
+  // Referencia para evitar sincronizaciones simultáneas
+  const isSyncingRef = React.useRef(false);
+  const syncingIdsRef = React.useRef(new Set());
+
   // Agregar registro de precio y sincronizar inmediatamente si hay conexión
   const handleAddRecord = async (record) => {
     const updated = [record, ...registros];
@@ -71,8 +75,9 @@ export default function App() {
       saveData(regKey, updated);
     }
 
-    // Intentar sincronizar inmediatamente con el backend
-    if (navigator.onLine) {
+    // Intentar sincronizar inmediatamente con el backend evitando carreras
+    if (navigator.onLine && !syncingIdsRef.current.has(record.id)) {
+      syncingIdsRef.current.add(record.id);
       try {
         const res = await syncPriceRecord(record);
         if (res && res.ok) {
@@ -89,6 +94,8 @@ export default function App() {
         }
       } catch (e) {
         console.log('[Sync] Guardado offline / pendiente para sincronización automática');
+      } finally {
+        setTimeout(() => syncingIdsRef.current.delete(record.id), 5000);
       }
     }
   };
@@ -149,9 +156,6 @@ export default function App() {
     showToast('Usuario eliminado');
   };
 
-  // Referencia para evitar sincronizaciones simultáneas
-  const isSyncingRef = React.useRef(false);
-
   // Sincronización automática de pendientes al reconectar a internet o periódicamente
   useEffect(() => {
     const sincronizarPendientes = async () => {
@@ -161,10 +165,9 @@ export default function App() {
       try {
         const regKey = getUserStorageKey('registros', currentUser.usuario);
         const currentSaved = loadData(regKey, []);
-        const pendientes = currentSaved.filter((r) => r.pendiente);
+        const pendientes = currentSaved.filter((r) => r.pendiente && !syncingIdsRef.current.has(r.id));
 
         if (!pendientes.length) {
-          isSyncingRef.current = false;
           return;
         }
 
@@ -172,6 +175,7 @@ export default function App() {
         const syncedIds = new Set();
 
         for (const item of pendientes) {
+          syncingIdsRef.current.add(item.id);
           try {
             const res = await syncPriceRecord(item);
             if (res && res.ok) {
@@ -180,6 +184,8 @@ export default function App() {
             }
           } catch (e) {
             break;
+          } finally {
+            setTimeout(() => syncingIdsRef.current.delete(item.id), 5000);
           }
         }
 

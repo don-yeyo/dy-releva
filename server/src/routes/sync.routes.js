@@ -2,11 +2,33 @@ import { Router } from 'express';
 
 const router = Router();
 
+// Caché de deduplicación en memoria para evitar inserciones dobles simultáneas (ventana de 60s)
+const recentSyncIds = new Map();
+
+function checkAndMarkDuplicate(id) {
+  if (!id) return false;
+  const now = Date.now();
+  for (const [key, time] of recentSyncIds.entries()) {
+    if (now - time > 60000) recentSyncIds.delete(key);
+  }
+  const strId = String(id);
+  if (recentSyncIds.has(strId)) {
+    return true;
+  }
+  recentSyncIds.set(strId, now);
+  return false;
+}
+
 // Sincronizar un registro de relevamiento de precio
 router.post('/price', async (req, res) => {
   try {
     const record = req.body || {};
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
+
+    if (record.id && checkAndMarkDuplicate(record.id)) {
+      console.warn(`[Sync Price] Registro #${record.id} ya fue procesado recientemente. Omitiendo duplicado.`);
+      return res.json({ ok: true, duplicated: true, id: record.id });
+    }
 
     if (!scriptUrl) {
       console.warn('[Sync Price] GOOGLE_SCRIPT_URL no configurada. Simulando sincronización exitosa.');
