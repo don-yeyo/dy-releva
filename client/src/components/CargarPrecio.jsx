@@ -190,6 +190,7 @@ export default function CargarPrecio({
     setIsSubmitting(true);
     onSaveLocal({ nombre: locNombre, ciudad: locCiudad, direccion: locDir });
 
+    const now = new Date();
     const numDyPrecio = dyPrecio !== '' ? (parseFloat(dyPrecio) || 0) : '';
     const refDyLimipio = dyRef.trim();
 
