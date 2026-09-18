@@ -190,8 +190,7 @@ export default function CargarPrecio({
     setIsSubmitting(true);
     onSaveLocal({ nombre: locNombre, ciudad: locCiudad, direccion: locDir });
 
-    const now = new Date();
-    const numDyPrecio = parseFloat(dyPrecio) || 0;
+    const numDyPrecio = dyPrecio !== '' ? (parseFloat(dyPrecio) || 0) : '';
     const refDyLimipio = dyRef.trim();
 
     const newRecord = {
@@ -207,14 +206,35 @@ export default function CargarPrecio({
       gramaje: gramaje.trim(),
       marca: marca.trim(),
       precio: numPrecio,
+
+      // Referencia Don Yeyo
+      'Ref DY': refDyLimipio,
+      'Ref. DY': refDyLimipio,
+      'Producto Propio': refDyLimipio,
       dyRef: refDyLimipio,
       refDy: refDyLimipio,
       prodPropio: refDyLimipio,
       productoPropio: refDyLimipio,
-      dyPrecio: numDyPrecio,
+
+      // Precio Propio / Precio Pro (Columna N exacta)
+      'Precio Pro': numDyPrecio,
+      'Precio pro': numDyPrecio,
+      'precio pro': numDyPrecio,
+      'PRECIO PRO': numDyPrecio,
+      'Precio Propio': numDyPrecio,
+      'Precio DY': numDyPrecio,
       precioPro: numDyPrecio,
-      precioPropio: numDyPrecio,
+      PrecioPro: numDyPrecio,
       precio_pro: numDyPrecio,
+      precioPropio: numDyPrecio,
+      precio_propio: numDyPrecio,
+      dyPrecio: numDyPrecio,
+      precioDY: numDyPrecio,
+      precioDy: numDyPrecio,
+      dy_precio: numDyPrecio,
+      N: numDyPrecio,
+      colN: numDyPrecio,
+
       comentario: comentario.trim(),
       pendiente: true,
       lat: '',
@@ -472,8 +492,13 @@ export default function CargarPrecio({
       <div className="section-label">Ref. Don Yeyo <span>(Opcional para comparativa)</span></div>
       <div className="card">
         <div className="field">
-          <label>Producto Propio de Referencia</label>
-          <select value={dyRef} onChange={(e) => setDyRef(e.target.value)}>
+          <label htmlFor="dy-ref">Producto Propio de Referencia</label>
+          <select
+            id="dy-ref"
+            name="dyRef"
+            value={dyRef}
+            onChange={(e) => setDyRef(e.target.value)}
+          >
             <option value="">Sin referencia</option>
             {dyOptions.map((p, idx) => (
               <option key={idx} value={p}>{p}</option>
@@ -481,11 +506,15 @@ export default function CargarPrecio({
           </select>
         </div>
 
-        <div className="field" style={{ marginTop: '12px' }}>
-          <label>Precio Propio en Góndola (Precio Pro) <span>(Opcional)</span></label>
+        <div className="field" id="dy-precio-field" style={{ marginTop: '12px' }}>
+          <label htmlFor="precio-pro">Precio Propio en Góndola (Precio Pro) <span>(Opcional)</span></label>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
             <div className="currency">$</div>
             <input
+              id="precio-pro"
+              name="Precio Pro"
+              data-col="N"
+              data-testid="input-precio-pro"
               type="number"
               placeholder="0.00"
               step="0.01"
